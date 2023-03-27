@@ -140,7 +140,6 @@ export default {
                     await updateContent(item.id, item);
                 }
             }
-
             await this.loadContent();
         },
 
@@ -161,7 +160,6 @@ export default {
                     await deleteContent(id);
                 }
             }
-
             await this.loadContent();
         },
 

@@ -1,6 +1,6 @@
 <template>
     <AdminNavbarComponent />
-    <IntroductionComponent />
+    <ContentGeneratorComponent />
 </template>
 
 <script></script>

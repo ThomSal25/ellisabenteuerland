@@ -7,6 +7,8 @@ import ButtonComponent from "./components/Common/ButtonComponent.vue";
 import InputComponent from "./components/Common/InputComponent.vue";
 // Admin View Components
 import AdminNavbarComponent from "./components/AdminView/AdminNavbarComponent.vue";
+import TiptapComponent from "./components/AdminView/TiptapComponent.vue";
+import ContentGeneratorComponent from "./components/AdminView/ContentGeneratorComponent.vue";
 // Visitor View Components
 import NewElementComponent from "./components/NewElementComponent.vue";
 import NavbarComponent from "./components/NavbarComponent.vue";
@@ -22,6 +24,8 @@ app.mount("#app");
 import Admin from "./Admin.vue";
 const admin = createApp(Admin).use(router);
 admin.component("AdminNavbarComponent", AdminNavbarComponent);
+admin.component("TiptapComponent", TiptapComponent);
+admin.component("ContentGeneratorComponent", ContentGeneratorComponent);
 admin.component("ButtonComponent", ButtonComponent);
 admin.component("InputComponent", InputComponent);
 admin.component("IntroductionComponent", IntroductionComponent);
