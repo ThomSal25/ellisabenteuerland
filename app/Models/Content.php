@@ -15,4 +15,8 @@ class Content extends Model
         'route',
         'isActive'
     ];
+
+    protected $casts = [
+        'content' => 'json',
+    ];
 }

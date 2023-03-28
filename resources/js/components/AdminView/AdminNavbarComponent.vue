@@ -126,7 +126,7 @@ export default {
         async addNewContent() {
             this.newContent.route = this.newContent.name;
             this.replaceUmlauts(this.newContent.route);
-            this.newContent.content = "{}";
+            this.newContent.content = "";
             this.newContent.isActive = false;
             await addContent(this.newContent);
             await this.loadContent();

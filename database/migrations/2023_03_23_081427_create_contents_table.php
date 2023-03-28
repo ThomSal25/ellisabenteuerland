@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
-            // $table->string('content');
-            $table->json('content')->nullable();
+            // $table->string('content')->nullable();
+            $table->json('content')->nullable(); 
             $table->string('route');
             $table->boolean('isActive');
         });

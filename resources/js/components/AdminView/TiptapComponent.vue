@@ -136,14 +136,75 @@ export default {
             editor: null,
         };
     },
+    props: ["modelValue"],
+    emits: ["update:modelValue"],
+    watch: {
+        modelValue(value) {
+            // HTML
+            const isSame = this.editor.getHTML() === value;
+
+            // JSON
+            // const isSame = JSON.stringify(this.editor.getJSON()) === JSON.stringify(value)
+
+            if (isSame) {
+                return;
+            }
+
+            this.editor.commands.setContent(value, false);
+        },
+    },
 
     mounted() {
         this.editor = new Editor({
             extensions: [StarterKit],
-            content: `
-        <h1>Hier Text einfügen.</h1>
-      `,
+            content: this.modelValue,
+            onUpdate: () => {
+                // HTML
+                this.$emit("update:modelValue", this.editor.getHTML());
+
+                // JSON
+                // this.$emit('update:modelValue', this.editor.getJSON())
+            },
+            onUpdate: () => {
+                // HTML
+                this.$emit("update:modelValue", this.editor.getHTML());
+
+                // JSON
+                // this.$emit('update:modelValue', this.editor.getJSON())
+            },
         });
+    },
+
+    methods: {
+        setLink() {
+            const previousUrl = this.editor.getAttributes("link").href;
+            const url = window.prompt("URL", previousUrl);
+
+            // cancelled
+            if (url === null) {
+                return;
+            }
+
+            // empty
+            if (url === "") {
+                this.editor
+                    .chain()
+                    .focus()
+                    .extendMarkRange("link")
+                    .unsetLink()
+                    .run();
+
+                return;
+            }
+
+            // update link
+            this.editor
+                .chain()
+                .focus()
+                .extendMarkRange("link")
+                .setLink({ href: url })
+                .run();
+        },
     },
 
     beforeUnmount() {
