@@ -131,6 +131,7 @@ export default {
             await addContent(this.newContent);
             await this.loadContent();
             this.newContent.name = "";
+            location.reload();
         },
 
         async setActive(id) {
@@ -161,6 +162,7 @@ export default {
                 }
             }
             await this.loadContent();
+            location.reload();
         },
 
         replaceUmlauts(str) {
