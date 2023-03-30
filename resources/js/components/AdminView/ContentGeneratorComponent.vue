@@ -41,21 +41,32 @@
             <!-- Cancel -->
         </div>
     </div>
-    <br /><br /><br /><br /><br />
+    <br /><br /><br />
+    <br /><br />
 
     <ButtonComponent :buttonName="PrepareNewContent" @click="showEditField" />
 
     <div :class="[{ 'hide-edit-field': hideEditField }]">
         <p>Preview:</p>
-        <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sapiente
-            unde animi dicta voluptatum quibusdam soluta et debitis
-            reprehenderit? Dolore nihil, omnis velit ab quo officiis voluptatem
-            praesentium laboriosam maiores quia.
-        </p>
+        <div class="grid-row" :style="columnCount">
+            <p v-for="n in counter" :key="n">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Delectus, laboriosam et? Laborum necessitatibus itaque alias
+                rerum porro dolores, quas quos perspiciatis hic quibusdam aut
+                exercitationem repellat nesciunt nam beatae voluptates.
+            </p>
+        </div>
         <div>
-            <span>Number of Collumns:</span> <InputComponent value="1" />
-            <ButtonComponent :buttonName="AddCollumnsButton" />
+            <span>Number of Collumns:</span>
+            <CounterFieldComponent
+                :count="counter"
+                @logCountUp="logNumUp()"
+                @logCountDown="logNumDown()"
+            />
+            <ButtonComponent
+                :buttonName="AddCollumnsButton"
+                @click="createCollumns()"
+            />
         </div>
         <select name="auswahl" id="auswahl">
             <option value="">--Add content--</option>
@@ -106,6 +117,7 @@ export default {
             EditContent: {},
             hideEditField: true,
             hideEditContainer: true,
+            counter: 1,
         };
     },
     async mounted() {
@@ -114,7 +126,11 @@ export default {
             this.Sitecontent = [];
         }
     },
-    computed: {},
+    computed: {
+        columnCount() {
+            return { gridTemplateColumns: `repeat(${this.counter}, 1fr)` };
+        },
+    },
     methods: {
         async loadContent() {
             this.Subs = await getContent();
@@ -176,6 +192,22 @@ export default {
         showEditField() {
             return (this.hideEditField = !this.hideEditField);
         },
+
+        logNumUp() {
+            this.counter++;
+        },
+
+        logNumDown() {
+            if (this.counter > 1) {
+                this.counter--;
+            }
+        },
+
+        createCollumns() {
+            for (let i = 1; i <= this.counter; i++) {
+                console.log(i);
+            }
+        },
     },
 };
 </script>
@@ -213,5 +245,9 @@ export default {
 
 .hide-edit-field {
     display: none;
+}
+
+.grid-row {
+    display: grid;
 }
 </style>

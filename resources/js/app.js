@@ -4,6 +4,7 @@ import router from "./router";
 
 // Common Components
 import ButtonComponent from "./components/Common/ButtonComponent.vue";
+import CounterFieldComponent from "./components/Common/CounterFieldComponent.vue";
 import InputComponent from "./components/Common/InputComponent.vue";
 // Admin View Components
 import AdminNavbarComponent from "./components/AdminView/AdminNavbarComponent.vue";
@@ -27,6 +28,7 @@ admin.component("AdminNavbarComponent", AdminNavbarComponent);
 admin.component("TiptapComponent", TiptapComponent);
 admin.component("ContentGeneratorComponent", ContentGeneratorComponent);
 admin.component("ButtonComponent", ButtonComponent);
+admin.component("CounterFieldComponent", CounterFieldComponent);
 admin.component("InputComponent", InputComponent);
 admin.component("IntroductionComponent", IntroductionComponent);
 admin.mount("#admin");
