@@ -8,14 +8,38 @@
             </li>
         </ul>
     </form> -->
-    <div
-        v-for="content in Sitecontent"
-        :key="content.createdAt"
-        class="sitecontent"
-    >
-        <article v-html="content.description" class="paragraph"></article>
-        <ButtonComponent :buttonName="EditButton" class="hide" @click="" />
-        <ButtonComponent :buttonName="DeleteButton" class="hide" @click="" />
+
+    <div class="content-container">
+        <div
+            v-for="content in Sitecontent"
+            :key="content.createdAt"
+            class="sitecontent"
+        >
+            <article v-html="content.description" class="paragraph"></article>
+            <ButtonComponent
+                :buttonName="EditButton"
+                class="hide"
+                @click="editContent(content.createdAt)"
+            />
+            <ButtonComponent
+                :buttonName="DeleteButton"
+                class="hide"
+                @click="deleteParagraph(content.createdAt)"
+            />
+        </div>
+        <div :class="[{ 'edit-container': hideEditContainer }]">
+            <p>New Text:</p>
+            <TiptapComponent v-model="EditTiptapField.description" />
+            <ButtonComponent
+                :buttonName="SaveChangeButton"
+                @click="updateSiteContent(this.EditContent.id)"
+            />
+            <ButtonComponent
+                :buttonName="CancelButton"
+                @click="closeEditTiptapField()"
+            />
+            <!-- Cancel -->
+        </div>
     </div>
     <br /><br /><br /><br /><br />
 
@@ -67,15 +91,21 @@ export default {
             CancelButton: "Cancel",
             EditButton: "Edit",
             DeleteButton: "Delete",
+            SaveChangeButton: "Save Change",
             AddCollumnsButton: "Add Collumns",
             PrepareNewContent: "New Paragraph",
             TiptapField: "Hier bitte Text einfügen.",
+            EditTiptapField: {
+                description: "",
+                createdAt: "",
+            },
             newParagraph: {
                 description: "",
                 createdAt: "",
             },
             EditContent: {},
             hideEditField: true,
+            hideEditContainer: true,
         };
     },
     async mounted() {
@@ -90,6 +120,7 @@ export default {
             this.Subs = await getContent();
             this.Sitecontent = this.Subs[0].content;
         },
+
         async addNewContent() {
             // Add current text into a new paragraph, createdAt will be used as 'id' to identify it in a for-loop
             this.newParagraph.description = this.TiptapField;
@@ -104,6 +135,44 @@ export default {
             await updateContent(1, this.EditContent);
             await this.loadContent();
         },
+
+        async editContent(id) {
+            this.hideEditContainer = false;
+            this.EditContent = this.Subs[0];
+            // find Paragraph, witch you want to edit & put Text and id into the EditTiptapField
+            for (let item of this.EditContent.content) {
+                if (item.createdAt === id) {
+                    this.EditTiptapField = item;
+                }
+            }
+        },
+
+        async updateSiteContent(id) {
+            await updateContent(id, this.EditContent);
+            await this.loadContent();
+            this.closeEditTiptapField();
+        },
+
+        closeEditTiptapField() {
+            this.EditTiptapField = "";
+            this.hideEditContainer = true;
+        },
+
+        async deleteParagraph(id) {
+            // because it will only delete a array of the Sitecontent, we need the updateContent-method
+            this.EditContent = this.Subs[0];
+            for (let item of this.EditContent.content) {
+                if (item.createdAt === id) {
+                    this.EditContent.content.splice(
+                        this.EditContent.content.indexOf(item),
+                        1
+                    );
+                }
+            }
+            await updateContent(this.EditContent.id, this.EditContent);
+            await this.loadContent();
+        },
+
         showEditField() {
             return (this.hideEditField = !this.hideEditField);
         },
@@ -112,6 +181,14 @@ export default {
 </script>
 
 <style>
+.content-container {
+    display: grid;
+}
+
+.edit-container {
+    display: none;
+}
+
 #border {
     border: 0.1rem solid black;
 }
