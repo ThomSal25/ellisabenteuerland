@@ -9,6 +9,7 @@
             <article v-for="paragraph in content" :key="paragraph.createdAt">
                 <select
                     name="auswahl"
+                    :class="[{ 'hide-select': hideSelect }]"
                     id="auswahl"
                     @change="kindOfContent($event, paragraph.createdAt)"
                 >
@@ -104,6 +105,7 @@ export default {
             AddCollumnsButton: "Add Collumns",
             PrepareNewContent: "New Paragraph",
             TiptapField: "Hier bitte Text einfügen.",
+            hideSelect: true,
             Columns: [],
             EditTiptapField: {
                 description: "",
@@ -124,9 +126,7 @@ export default {
     },
     async mounted() {
         await this.loadContent();
-        if (this.Sitecontent === null) {
-            this.Sitecontent = [];
-        }
+        this.Sitecontent === null ? (this.Sitecontent = []) : null;
     },
     computed: {
         columnCount() {
@@ -143,14 +143,19 @@ export default {
             this.EditContent = this.Subs[0];
             for (let item of this.EditContent.content) {
                 for (let part of item) {
-                    if (part.createdAt === id) {
-                        if (event.target.value === "text") {
-                            part.description = this.PreviewText;
-                        }
-                        if (event.target.value === "button") {
-                            part.description = this.PreviewButton;
-                        }
-                    }
+                    part.createdAt === id
+                        ? event.target.value === "text"
+                            ? (part.description = this.PreviewText)
+                            : event.target.value === "pictureFromDatabase"
+                            ? (part.description = '<img src="" alt="">')
+                            : event.target.value === "pictureUpload"
+                            ? (part.description = '<img src="" alt="">')
+                            : event.target.value === "youtube"
+                            ? (part.description = this.PreviewButton)
+                            : event.target.value === "button"
+                            ? (part.description = this.PreviewButton)
+                            : null
+                        : null;
                 }
             }
             await updateContent(1, this.EditContent);
@@ -173,14 +178,16 @@ export default {
         },
 
         async editContent(id) {
+            this.hideSelect = false;
             this.hideEditContainer = false;
+
             this.EditContent = this.Subs[0];
             // find Paragraph, witch you want to edit & put Text and id into the EditTiptapField
             for (let item of this.EditContent.content) {
                 for (let part of item) {
-                    if (part.createdAt === id) {
-                        this.EditTiptapField = part;
-                    }
+                    part.createdAt === id
+                        ? (this.EditTiptapField = part)
+                        : null;
                 }
             }
         },
@@ -201,9 +208,9 @@ export default {
             this.EditContent = this.Subs[0];
             for (let item of this.EditContent.content) {
                 for (let part of item) {
-                    if (part.createdAt === id) {
-                        item.splice(item.indexOf(part), 1);
-                    }
+                    part.createdAt === id
+                        ? item.splice(item.indexOf(part), 1)
+                        : null;
                 }
             }
 
@@ -220,9 +227,7 @@ export default {
         },
 
         logNumDown() {
-            if (this.counter > 1) {
-                this.counter--;
-            }
+            this.counter > 1 ? this.counter-- : null;
         },
 
         async createCollumns() {
@@ -270,6 +275,10 @@ export default {
 }
 
 .hide {
+    display: none;
+}
+
+.hide-select {
     display: none;
 }
 

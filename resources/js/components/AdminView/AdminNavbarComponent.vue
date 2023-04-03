@@ -109,9 +109,7 @@ export default {
         toggleEditForm(id) {
             this.showEditform = false;
             for (let item of this.Subs) {
-                if (id === item.id) {
-                    this.editContent = item;
-                }
+                id === item.id ? (this.editContent = item) : null;
             }
         },
 
@@ -136,10 +134,10 @@ export default {
 
         async setActive(id) {
             for (let item of this.Subs) {
-                if (id === item.id) {
-                    item.isActive = !item.isActive;
-                    await updateContent(item.id, item);
-                }
+                id === item.id
+                    ? ((item.isActive = !item.isActive),
+                      await updateContent(item.id, item))
+                    : null;
             }
             await this.loadContent();
         },
@@ -152,14 +150,10 @@ export default {
 
         async deleteTopic(id) {
             for (let item of this.Subs) {
-                if (
-                    id === item.id &&
-                    confirm(
-                        "Warning, whole content of this topic will be deleted!"
-                    )
-                ) {
-                    await deleteContent(id);
-                }
+                id === item.id &&
+                confirm("Warning, whole content of this topic will be deleted!")
+                    ? await deleteContent(id)
+                    : null;
             }
             await this.loadContent();
             location.reload();
