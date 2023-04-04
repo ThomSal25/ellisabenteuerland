@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\ImageController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -34,7 +35,7 @@ Route::controller(LoginController::class)->group(function(){
     Route::get('dashboard', 'dashboard')->name('dashboard');
 }); 
 
-
+Route::get('/image', [ImageController::class,'indexImage'])->name('image.index');
 Route::post('/image', [ImageController::class,'storeImage'])->name('image.store');
 
 // Vue
@@ -44,3 +45,5 @@ Route::post('/content/createContent', [ContentController::class, 'saveWithVue'])
 Route::put('/content/updateContent/{id}', [ContentController::class, 'updateWithVue']); 
 Route::delete('/content/deleteContent/{id}', [ContentController::class, 'deleteWithVue']);
 Route::get('/content/list', [ContentController::class, 'indexContent']);
+
+Route::post('/newImage', [ImageController::class, 'saveImage'])->name('image.save');

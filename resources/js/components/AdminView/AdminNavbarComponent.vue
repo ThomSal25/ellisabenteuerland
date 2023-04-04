@@ -32,7 +32,6 @@
         <ButtonComponent :buttonName="NewContent" @click="toggleForm" />
         <form
             class="add-form"
-            action="./api/list_entries"
             method="POST"
             @submit.prevent="addNewContent()"
             :class="[{ 'show-form': showForm }]"

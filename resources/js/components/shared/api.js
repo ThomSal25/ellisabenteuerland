@@ -23,3 +23,7 @@ export async function updateContent(id, content) {
 export async function deleteContent(id) {
     await axios.delete(`/content/deleteContent/${id}`);
 }
+
+export async function addImg(pic) {
+    await axios.post("/image", pic);
+}

@@ -1,6 +1,6 @@
 @extends('main')
 
-@section('content')
+@section('visitorContent')
 
     <div class="relative flex items-center min-h-screen justify-center overflow-hidden">
             <form action="{{ route('image.store') }}" method="POST" class="shadow p-12" enctype="multipart/form-data">
@@ -14,11 +14,15 @@
                     @enderror
                 </label>
                 <div>
-                    <label class="mr-4" for="description">Description</label>
-                    <input type="text" name="description">
+                    <label class="mr-4" for="name">name</label>
+                    <input type="text" name="name">
+                    <label class="mr-4" for="area">area</label>
+                    <input type="text" name="area">
+                    <label class="mr-4" for="country">country</label>
+                    <input type="text" name="country">
                 </div>
                 <button type="submit" class="mt-4 px-4 py-2 text-sm text-black bg-indigo-600 rounded">Submit</button>
             </form>
         </div>
 
-@endsection('content')
+@endsection('visitorContent')

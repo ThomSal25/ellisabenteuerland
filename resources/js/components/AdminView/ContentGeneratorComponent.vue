@@ -1,5 +1,6 @@
 <template>
     <div class="content-container">
+        <PictureUploadComponent />
         <div
             v-for="(content, index) in Sitecontent"
             :key="index"
@@ -83,7 +84,7 @@
                 :buttonName="SaveNewContent"
                 @click="addNewContent()"
             />
-            <ButtonComponent :buttonName="CancelButton" @click="" />
+            <!-- <ButtonComponent :buttonName="CancelButton" @click="" /> -->
             <!-- Cancel -->
         </div>
     </div>
@@ -278,9 +279,9 @@ export default {
     display: none;
 }
 
-.hide-select {
+/* .hide-select {
     display: none;
-}
+} */
 
 .sitecontent:hover .hide {
     display: inline;

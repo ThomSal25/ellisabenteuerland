@@ -9,6 +9,7 @@ import InputComponent from "./components/Common/InputComponent.vue";
 // Admin View Components
 import AdminNavbarComponent from "./components/AdminView/AdminNavbarComponent.vue";
 import TiptapComponent from "./components/AdminView/TiptapComponent.vue";
+import PictureUploadComponent from "./components/AdminView/PictureUploadComponent.vue";
 import ContentGeneratorComponent from "./components/AdminView/ContentGeneratorComponent.vue";
 // Visitor View Components
 import NewElementComponent from "./components/NewElementComponent.vue";
@@ -30,5 +31,5 @@ admin.component("ContentGeneratorComponent", ContentGeneratorComponent);
 admin.component("ButtonComponent", ButtonComponent);
 admin.component("CounterFieldComponent", CounterFieldComponent);
 admin.component("InputComponent", InputComponent);
-admin.component("IntroductionComponent", IntroductionComponent);
+admin.component("PictureUploadComponent", PictureUploadComponent);
 admin.mount("#admin");
