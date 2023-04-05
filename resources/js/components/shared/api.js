@@ -25,5 +25,5 @@ export async function deleteContent(id) {
 }
 
 export async function addImg(pic) {
-    await axios.post("/image", pic);
+    await axios.post("/newImage", pic);
 }

@@ -1,5 +1,10 @@
 <template>
-    <form action="{{ route('image.save') }}" method="POST">
+    <form
+        action="{{ route('image.save') }}"
+        method="POST"
+        @submit.prevent="uploadImg()"
+        enctype="multipart/form-data"
+    >
         <div>
             <h3>Picture Upload</h3>
             <span>Picture Description: </span>
@@ -13,8 +18,7 @@
             type="file"
             accept="image/png, image/gif, image/jpeg"
             name="image"
-            id="img-upload"
-            v-html="FileName"
+            id="image"
             required
             @change="changeFile"
         />
@@ -32,10 +36,10 @@ export default {
             ImgName: "",
             ImgArea: "",
             ImgCountry: "",
-            FileName: "",
             FileLength: "",
+            UploadedFile: "",
             NewImg: {
-                name: "",
+                image: "",
                 area: "",
                 country: "",
             },
@@ -44,18 +48,22 @@ export default {
     computed: {},
     methods: {
         uploadImg() {
+            const fileData = new FormData();
+            fileData.append("image", this.UploadedFile);
+            fileData.append("name", this.ImgName);
+            fileData.append("area", this.ImgArea);
+            fileData.append("country", this.ImgCountry);
+            console.log(fileData);
+
             this.ImgName.length > 1 &&
             this.ImgArea.length > 1 &&
             this.ImgCountry.length > 1 &&
             this.FileLength > 0
-                ? ((this.NewImg.name =
-                      "Ellisabenteuerland-" +
-                      this.ImgCountry +
-                      this.ImgArea +
-                      this.ImgName),
+                ? ((this.NewImg.image = fileData),
+                  (this.NewImg.name = this.ImgName),
                   (this.NewImg.area = this.ImgArea),
                   (this.NewImg.country = this.ImgCountry),
-                  addImg(this.NewImg),
+                  addImg(fileData),
                   (this.ImgName = ""),
                   (this.ImgArea = ""),
                   (this.ImgCountry = ""))
@@ -63,7 +71,9 @@ export default {
         },
         changeFile(event) {
             this.FileLength = event.target.files.length;
-            console.log(event.target.files, event.target.files.length);
+            this.UploadedFile = event.target.files[0];
+            console.log(event.target.files[0], event.target.files.length);
+            // console.log(event);
         },
     },
 };

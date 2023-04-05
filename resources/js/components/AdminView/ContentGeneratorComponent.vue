@@ -1,28 +1,21 @@
 <template>
     <div class="content-container">
-        <PictureUploadComponent />
         <div
             v-for="(content, index) in Sitecontent"
             :key="index"
             class="sitecontent"
         >
             <!-- <article v-html="content" class="paragraph"></article> -->
-            <article v-for="paragraph in content" :key="paragraph.createdAt">
-                <select
-                    name="auswahl"
-                    :class="[{ 'hide-select': hideSelect }]"
-                    id="auswahl"
+            <article
+                class="article-border single-part"
+                v-for="paragraph in content"
+                :key="paragraph.createdAt"
+            >
+                <SelectComponent
+                    class="hide"
                     @change="kindOfContent($event, paragraph.createdAt)"
-                >
-                    <option value="">--Add content--</option>
-                    <option value="text">Text</option>
-                    <option value="pictureFromDatabase">
-                        Picture from Database
-                    </option>
-                    <option value="pictureUpload">Upload Picture</option>
-                    <option value="youtube">Youtube Video</option>
-                    <option value="button">Button</option>
-                </select>
+                />
+
                 <p v-html="paragraph.description"></p>
                 <ButtonComponent
                     :buttonName="EditButton"
@@ -36,56 +29,69 @@
                 />
             </article>
         </div>
-        <div :class="[{ 'edit-container': hideEditContainer }]">
-            <p>New Text:</p>
-            <TiptapComponent v-model="EditTiptapField.description" />
-            <ButtonComponent
-                :buttonName="SaveChangeButton"
-                @click="updateSiteContent(this.EditContent.id)"
-            />
-            <ButtonComponent
-                :buttonName="CancelButton"
-                @click="closeEditTiptapField()"
-            />
-        </div>
     </div>
     <br /><br /><br />
     <br /><br />
-
-    <ButtonComponent :buttonName="PrepareNewContent" @click="showEditField" />
-
-    <div :class="[{ 'hide-edit-field': hideEditField }]">
-        <div>
-            <span>Number of Collumns:</span>
-            <CounterFieldComponent
-                :count="counter"
-                @logCountUp="logNumUp()"
-                @logCountDown="logNumDown()"
-            />
-            <ButtonComponent
-                :buttonName="AddCollumnsButton"
-                @click="createCollumns()"
-            />
+    <!-- EditField -->
+    <div class="edit-background">
+        <div
+            class="edit-field"
+            :class="[{ 'edit-container': hideEditContainer }]"
+        >
             <p>Preview:</p>
-            <div class="grid-row" :style="columnCount">
-                <p v-for="n in counter" :key="n">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Delectus, laboriosam et? Laborum necessitatibus itaque alias
-                    rerum porro dolores, quas quos perspiciatis hic quibusdam
-                    aut exercitationem repellat nesciunt nam beatae voluptates.
-                </p>
+
+            <p v-html="EditTiptapField.description"></p>
+
+            <div
+                class="edit-text"
+                :class="[{ 'edit-container': hideEditContainer }]"
+            >
+                <p>New Text:</p>
+                <TiptapComponent v-model="EditTiptapField.description" />
+                <ButtonComponent
+                    :buttonName="SaveChangeButton"
+                    @click="updateSiteContent(this.EditContent.id)"
+                />
+                <ButtonComponent
+                    :buttonName="CancelButton"
+                    @click="closeEditTiptapField()"
+                />
             </div>
         </div>
+    </div>
 
-        <div id="border">
-            <TiptapComponent v-model="TiptapField" />
+    <br /><br /><br /><br />
+    <div class="new-content-field">
+        <ButtonComponent
+            :buttonName="PrepareNewContent"
+            @click="showEditField"
+        />
 
-            <ButtonComponent
-                :buttonName="SaveNewContent"
-                @click="addNewContent()"
-            />
-            <!-- <ButtonComponent :buttonName="CancelButton" @click="" /> -->
-            <!-- Cancel -->
+        <div :class="[{ 'hide-edit-field': hideEditField }]">
+            <div>
+                <span>Number of Collumns:</span>
+                <CounterFieldComponent
+                    class="counter-field"
+                    :count="counter"
+                    @logCountUp="logNumUp()"
+                    @logCountDown="logNumDown()"
+                />
+                <ButtonComponent
+                    :buttonName="AddCollumnsButton"
+                    @click="createCollumns()"
+                />
+
+                <p>Preview:</p>
+                <div class="grid-row" :style="columnCount">
+                    <div
+                        v-for="paragraph in Columns"
+                        :key="paragraph.createdAt"
+                    >
+                        <SelectComponent @change="kindOfNewContent" />
+                        <p>{{ paragraph.description }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -111,6 +117,7 @@ export default {
             EditTiptapField: {
                 description: "",
                 createdAt: "",
+                contentType: "",
             },
             newParagraph: {
                 description: "",
@@ -140,6 +147,21 @@ export default {
             this.Sitecontent = this.Subs[0].content;
         },
 
+        async kindOfNewContent(event) {
+            console.log(event.target.value);
+            // event.target.value === "text"
+            //     ? (paragraph.description = this.PreviewText)
+            //     : event.target.value === "pictureFromDatabase"
+            //     ? (paragraph.description = '<img src="" alt="">')
+            //     : event.target.value === "pictureUpload"
+            //     ? (paragraph.description = '<img src="" alt="">')
+            //     : event.target.value === "youtube"
+            //     ? (paragraph.description = this.PreviewButton)
+            //     : event.target.value === "button"
+            //     ? (paragraph.description = this.PreviewButton)
+            //     : null;
+        },
+
         async kindOfContent(event, id) {
             this.EditContent = this.Subs[0];
             for (let item of this.EditContent.content) {
@@ -163,20 +185,20 @@ export default {
             await this.loadContent();
         },
 
-        async addNewContent() {
-            // Add current text into a new paragraph, createdAt will be used as 'id' to identify it in a for-loop
-            this.newParagraph.description = this.TiptapField;
-            this.newParagraph.createdAt = Date();
-            // new paragraph will be pushed in the array with the content of the current view
-            this.Sitecontent.push(this.newParagraph);
-            //load all information for the put method and add the content of the current view
-            this.EditContent = this.Subs[0];
-            this.EditContent.content = this.Sitecontent;
+        // async addNewContent() {
+        //     // Add current text into a new paragraph, createdAt will be used as 'id' to identify it in a for-loop
+        //     this.newParagraph.description = this.TiptapField;
+        //     this.newParagraph.createdAt = Date();
+        //     // new paragraph will be pushed in the array with the content of the current view
+        //     this.Sitecontent.push(this.newParagraph);
+        //     //load all information for the put method and add the content of the current view
+        //     this.EditContent = this.Subs[0];
+        //     this.EditContent.content = this.Sitecontent;
 
-            this.TiptapField = "";
-            await updateContent(1, this.EditContent);
-            await this.loadContent();
-        },
+        //     this.TiptapField = "";
+        //     await updateContent(1, this.EditContent);
+        //     await this.loadContent();
+        // },
 
         async editContent(id) {
             this.hideSelect = false;
@@ -220,34 +242,53 @@ export default {
         },
 
         showEditField() {
+            this.Columns = [
+                {
+                    description: "New Field",
+                    createdAt: Date() + 1,
+                    contentType: "",
+                },
+            ];
             return (this.hideEditField = !this.hideEditField);
         },
 
         logNumUp() {
             this.counter++;
+
+            for (let i = 1; i <= this.counter; i++) {
+                let newParagraph = {
+                    description: "New Field",
+                    createdAt: Date() + i,
+                    contentType: "",
+                };
+                i > this.Columns.length
+                    ? this.Columns.push(newParagraph)
+                    : null;
+            }
         },
 
         logNumDown() {
-            this.counter > 1 ? this.counter-- : null;
+            this.counter > 1 ? this.counter-- : null, this.Columns.pop();
         },
 
-        async createCollumns() {
-            for (let i = 1; i <= this.counter; i++) {
-                let newParagraph = {
-                    description: "",
-                    createdAt: Date() + i,
-                };
-                this.Columns.push(newParagraph);
-            }
-            this.Sitecontent.push(this.Columns);
-            //load all information for the put method and add the content of the current view
-            this.EditContent = this.Subs[0];
-            this.EditContent.content = this.Sitecontent;
-            this.Columns = [];
-            this.counter = 1;
-            await updateContent(1, this.EditContent);
-            await this.loadContent();
-        },
+        // async createCollumns() {
+        // for (let i = 1; i <= this.counter; i++) {
+        //     let newParagraph = {
+        //         description: "New Field",
+        //         createdAt: Date() + i,
+        //         contentType: "text",
+        //     };
+        //     this.Columns.push(newParagraph);
+        // }
+        //     this.Sitecontent.push(this.Columns);
+        //     //load all information for the put method and add the content of the current view
+        //     this.EditContent = this.Subs[0];
+        //     this.EditContent.content = this.Sitecontent;
+        //     this.Columns = [];
+        //     this.counter = 1;
+        //     await updateContent(1, this.EditContent);
+        //     await this.loadContent();
+        // },
     },
 };
 </script>
@@ -255,6 +296,11 @@ export default {
 <style>
 .content-container {
     display: grid;
+}
+
+.single-part {
+    margin: 0.5rem;
+    padding: 0.5rem;
 }
 
 .edit-container {
@@ -287,11 +333,45 @@ export default {
     display: inline;
 }
 
+.sitecontent:hover .article-border {
+    border: 0.1rem solid black;
+    border-radius: 1rem;
+}
+
+.edit-background {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    height: 100vh;
+}
+
+.edit-field {
+    border: 0.1rem solid black;
+    border-radius: 2rem;
+    padding: 2rem;
+    background-color: antiquewhite;
+    width: 75%;
+    transform: translate(12.5%, 50%);
+    /* transform: translateY(50%); */
+}
+
 .hide-edit-field {
     display: none;
 }
 
 .grid-row {
     display: grid;
+}
+
+.new-content-field {
+    margin-bottom: 5rem;
+}
+
+.counter-field {
+    display: grid;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
 }
 </style>

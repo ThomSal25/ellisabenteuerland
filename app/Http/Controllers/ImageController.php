@@ -15,7 +15,7 @@ class ImageController extends Controller
 
     public function storeImage(Request $request)
     {
-        // \Log::info(json_encode($request->all()));
+        \Log::info(json_encode($request->all()));
         $this->validate($request, [
             'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             
@@ -33,9 +33,9 @@ class ImageController extends Controller
         ]);
 
         session()->flash('success', 'Image Upload successfully');
-        \Log::info(json_encode($request->all()));
-        \Log::info(json_encode($data->image));
-        \Log::info(json_encode($image_path));
+        // \Log::info(json_encode($request->all()));
+        // \Log::info(json_encode($data->image));
+        // \Log::info(json_encode($image_path));
         return redirect()->route('image.index');
     }
 
