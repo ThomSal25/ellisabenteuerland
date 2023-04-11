@@ -47,3 +47,4 @@ Route::delete('/content/deleteContent/{id}', [ContentController::class, 'deleteW
 Route::get('/content/list', [ContentController::class, 'indexContent']);
 
 Route::post('/newImage', [ImageController::class, 'saveImage'])->name('image.save');
+Route::get('/allImg', [TodoListController::class, 'loadImg']);

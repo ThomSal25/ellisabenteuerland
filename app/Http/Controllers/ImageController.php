@@ -68,4 +68,10 @@ class ImageController extends Controller
     public function showAllImages(){
         return view('/image', ['imageList' => Image::all()]);
     }
+
+    public function loadImg(){
+        return Image::all();
+        // return listEntry::all();
+        // return view('image', ['images' => Image::all()]);
+    }
 }

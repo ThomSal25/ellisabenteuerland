@@ -1,29 +1,38 @@
 <template>
-    <form
-        action="{{ route('image.save') }}"
-        method="POST"
-        @submit.prevent="uploadImg()"
-        enctype="multipart/form-data"
-    >
-        <div>
-            <h3>Picture Upload</h3>
-            <span>Picture Description: </span>
-            <InputComponent v-model="ImgName" name="name" required />
-            <span>Area: </span>
-            <InputComponent v-model="ImgArea" name="area" required />
-            <span>Country: </span>
-            <InputComponent v-model="ImgCountry" name="country" required />
-        </div>
-        <input
-            type="file"
-            accept="image/png, image/gif, image/jpeg"
-            name="image"
-            id="image"
-            required
-            @change="changeFile"
-        />
-        <ButtonComponent :buttonName="UploadButton" />
-    </form>
+    <div class="form-orientation">
+        <form
+            class="pic-form"
+            action="{{ route('image.save') }}"
+            method="POST"
+            @submit.prevent="uploadImg()"
+            enctype="multipart/form-data"
+        >
+            <div>
+                <h3>Picture Upload</h3>
+                <p class="pic-info">
+                    <span>Picture Description: </span>
+                    <InputComponent v-model="ImgName" name="name" required />
+                    <span>Area: </span>
+                    <InputComponent v-model="ImgArea" name="area" required />
+                    <span>Country: </span>
+                    <InputComponent
+                        v-model="ImgCountry"
+                        name="country"
+                        required
+                    />
+                </p>
+            </div>
+            <input
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                name="image"
+                id="image"
+                required
+                @change="changeFile"
+            />
+            <ButtonComponent :buttonName="UploadButton" />
+        </form>
+    </div>
 </template>
 
 <script>
@@ -79,4 +88,21 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.form-orientation {
+    display: inline-block;
+}
+.pic-form {
+    border: 0.1rem solid black;
+    border-radius: 1rem;
+    max-width: 50rem;
+    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
+}
+
+.pic-info {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+}
+</style>

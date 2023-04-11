@@ -1,6 +1,6 @@
 <template>
-    <select name="auswahl" id="auswahl">
-        <option value="">--Add content--</option>
+    <select name="auswahl" id="auswahl" v-model="preselectedContent">
+        <option value="start">--Add content--</option>
         <option value="text">Text</option>
         <option value="pictureFromDatabase">Picture from Database</option>
         <option value="pictureUpload">Upload Picture</option>
@@ -9,6 +9,13 @@
     </select>
 </template>
 
-<script></script>
+<script>
+export default {
+    name: "SelectComponent",
+    props: {
+        preselectedContent: String,
+    },
+};
+</script>
 
 <style></style>

@@ -1,4 +1,5 @@
 <template>
+    <PictureDatabaseComponent />
     <div class="content-container">
         <div
             v-for="(content, index) in Sitecontent"
@@ -12,6 +13,7 @@
                 :key="paragraph.createdAt"
             >
                 <SelectComponent
+                    :preselectedContent="paragraph.contentType"
                     class="hide"
                     @change="kindOfContent($event, paragraph.createdAt)"
                 />
@@ -76,10 +78,6 @@
                     @logCountUp="logNumUp()"
                     @logCountDown="logNumDown()"
                 />
-                <ButtonComponent
-                    :buttonName="AddCollumnsButton"
-                    @click="createCollumns()"
-                />
 
                 <p>Preview:</p>
                 <div class="grid-row" :style="columnCount">
@@ -87,10 +85,65 @@
                         v-for="paragraph in Columns"
                         :key="paragraph.createdAt"
                     >
-                        <SelectComponent @change="kindOfNewContent" />
-                        <p>{{ paragraph.description }}</p>
+                        <SelectComponent
+                            :preselectedContent="'start'"
+                            @change="
+                                kindOfNewContent($event, paragraph.createdAt)
+                            "
+                        />
+                        <p v-html="paragraph.description"></p>
+                        <!-- If Text selected -->
+
+                        <div
+                            :class="[
+                                {
+                                    'hide-edit-field':
+                                        paragraph.hideTiptapActive,
+                                },
+                            ]"
+                        >
+                            <TiptapComponent v-model="paragraph.description" />
+                        </div>
+                        <!-- If  picture from database is selected-->
+                        <PictureDatabaseComponent />
+                        <!-- If picture upload selected -->
+                        <PictureUploadComponent
+                            :class="[
+                                {
+                                    'hide-edit-field': paragraph.hidePicUpload,
+                                },
+                            ]"
+                        />
+                        <!-- If youtube selected -->
+                        <div
+                            :class="[
+                                {
+                                    'hide-edit-field': paragraph.hideTubeComp,
+                                },
+                            ]"
+                        >
+                            <span>Add YouTube-Link:</span>
+                            <InputComponent />
+                            <ButtonComponent :buttonName="AddLink" />
+                        </div>
+                        <!-- If button selected -->
+                        <div
+                            :class="[
+                                {
+                                    'hide-edit-field': paragraph.hideBtnComp,
+                                },
+                            ]"
+                        >
+                            <span>Add button text:</span>
+                            <InputComponent />
+                            <ButtonComponent :buttonName="AddBtn" />
+                        </div>
                     </div>
                 </div>
+                <ButtonComponent
+                    :buttonName="AddCollumnsButton"
+                    @click="createCollumns()"
+                />
             </div>
         </div>
     </div>
@@ -111,6 +164,8 @@ export default {
             SaveChangeButton: "Save Change",
             AddCollumnsButton: "Add Collumns",
             PrepareNewContent: "New Paragraph",
+            AddLink: "Add Link",
+            AddBtn: "Add Button Text",
             TiptapField: "Hier bitte Text einfügen.",
             hideSelect: true,
             Columns: [],
@@ -118,6 +173,11 @@ export default {
                 description: "",
                 createdAt: "",
                 contentType: "",
+                tiptapActive: "",
+                picDatabaseActive: "",
+                picUpload: "",
+                tubeComp: "",
+                btnComp: "",
             },
             newParagraph: {
                 description: "",
@@ -147,19 +207,34 @@ export default {
             this.Sitecontent = this.Subs[0].content;
         },
 
-        async kindOfNewContent(event) {
-            console.log(event.target.value);
-            // event.target.value === "text"
-            //     ? (paragraph.description = this.PreviewText)
-            //     : event.target.value === "pictureFromDatabase"
-            //     ? (paragraph.description = '<img src="" alt="">')
-            //     : event.target.value === "pictureUpload"
-            //     ? (paragraph.description = '<img src="" alt="">')
-            //     : event.target.value === "youtube"
-            //     ? (paragraph.description = this.PreviewButton)
-            //     : event.target.value === "button"
-            //     ? (paragraph.description = this.PreviewButton)
-            //     : null;
+        async kindOfNewContent(event, id) {
+            const eValue = event.target.value;
+            // console.log(eValue, event.target);
+            for (let item of this.Columns) {
+                item.hidePicDatabaseActive = true;
+                item.hidePicUpload = true;
+                item.hideTubeComp = true;
+                item.hideBtnComp = true;
+                item.createdAt === id
+                    ? eValue === "text"
+                        ? ((item.description = this.PreviewText),
+                          (item.contentType = "text"),
+                          (item.hideTiptapActive = false))
+                        : eValue === "pictureFromDatabase"
+                        ? ((item.description =
+                              "Noch keine Bilderdatenbank erstellt."),
+                          (item.contentType = "pictureFromDatabase"))
+                        : eValue === "pictureUpload"
+                        ? ((item.description = "{{PictureUploadComponent}}"),
+                          (item.contentType = "pictureUpload"),
+                          (item.hidePicUpload = false))
+                        : eValue === "youtube"
+                        ? ((item.description = ""), (item.hideTubeComp = false))
+                        : eValue === "button"
+                        ? ((item.description = ""), (item.hideBtnComp = false))
+                        : null
+                    : null;
+            }
         },
 
         async kindOfContent(event, id) {
@@ -184,21 +259,6 @@ export default {
             await updateContent(1, this.EditContent);
             await this.loadContent();
         },
-
-        // async addNewContent() {
-        //     // Add current text into a new paragraph, createdAt will be used as 'id' to identify it in a for-loop
-        //     this.newParagraph.description = this.TiptapField;
-        //     this.newParagraph.createdAt = Date();
-        //     // new paragraph will be pushed in the array with the content of the current view
-        //     this.Sitecontent.push(this.newParagraph);
-        //     //load all information for the put method and add the content of the current view
-        //     this.EditContent = this.Subs[0];
-        //     this.EditContent.content = this.Sitecontent;
-
-        //     this.TiptapField = "";
-        //     await updateContent(1, this.EditContent);
-        //     await this.loadContent();
-        // },
 
         async editContent(id) {
             this.hideSelect = false;
@@ -247,6 +307,11 @@ export default {
                     description: "New Field",
                     createdAt: Date() + 1,
                     contentType: "",
+                    hideTiptapActive: true,
+                    hidePicDatabaseActive: true,
+                    hidePicUpload: true,
+                    hideTubeComp: true,
+                    hideBtnComp: true,
                 },
             ];
             return (this.hideEditField = !this.hideEditField);
@@ -260,6 +325,11 @@ export default {
                     description: "New Field",
                     createdAt: Date() + i,
                     contentType: "",
+                    hideTiptapActive: true,
+                    hidePicDatabaseActive: true,
+                    hidePicUpload: true,
+                    hideTubeComp: true,
+                    hideBtnComp: true,
                 };
                 i > this.Columns.length
                     ? this.Columns.push(newParagraph)
@@ -268,27 +338,19 @@ export default {
         },
 
         logNumDown() {
-            this.counter > 1 ? this.counter-- : null, this.Columns.pop();
+            this.counter > 1 ? (this.counter--, this.Columns.pop()) : null;
         },
 
-        // async createCollumns() {
-        // for (let i = 1; i <= this.counter; i++) {
-        //     let newParagraph = {
-        //         description: "New Field",
-        //         createdAt: Date() + i,
-        //         contentType: "text",
-        //     };
-        //     this.Columns.push(newParagraph);
-        // }
-        //     this.Sitecontent.push(this.Columns);
-        //     //load all information for the put method and add the content of the current view
-        //     this.EditContent = this.Subs[0];
-        //     this.EditContent.content = this.Sitecontent;
-        //     this.Columns = [];
-        //     this.counter = 1;
-        //     await updateContent(1, this.EditContent);
-        //     await this.loadContent();
-        // },
+        async createCollumns() {
+            this.Sitecontent.push(this.Columns);
+            //load all information for the put method and add the content of the current view
+            this.EditContent = this.Subs[0];
+            this.EditContent.content = this.Sitecontent;
+            this.Columns = [];
+            this.counter = 1;
+            //     await updateContent(1, this.EditContent);
+            //     await this.loadContent();
+        },
     },
 };
 </script>
