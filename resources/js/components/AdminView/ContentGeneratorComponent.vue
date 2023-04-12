@@ -1,5 +1,4 @@
 <template>
-    <PictureDatabaseComponent />
     <div class="content-container">
         <div
             v-for="(content, index) in Sitecontent"
@@ -105,7 +104,16 @@
                             <TiptapComponent v-model="paragraph.description" />
                         </div>
                         <!-- If  picture from database is selected-->
-                        <PictureDatabaseComponent />
+                        <div
+                            :class="[
+                                {
+                                    'hide-edit-field':
+                                        paragraph.hidePicDatabaseActive,
+                                },
+                            ]"
+                        >
+                            <PictureDatabaseComponent />
+                        </div>
                         <!-- If picture upload selected -->
                         <PictureUploadComponent
                             :class="[
@@ -221,9 +229,9 @@ export default {
                           (item.contentType = "text"),
                           (item.hideTiptapActive = false))
                         : eValue === "pictureFromDatabase"
-                        ? ((item.description =
-                              "Noch keine Bilderdatenbank erstellt."),
-                          (item.contentType = "pictureFromDatabase"))
+                        ? ((item.description = ""),
+                          (item.contentType = "pictureFromDatabase"),
+                          (item.hidePicDatabaseActive = false))
                         : eValue === "pictureUpload"
                         ? ((item.description = "{{PictureUploadComponent}}"),
                           (item.contentType = "pictureUpload"),
@@ -348,8 +356,8 @@ export default {
             this.EditContent.content = this.Sitecontent;
             this.Columns = [];
             this.counter = 1;
-            //     await updateContent(1, this.EditContent);
-            //     await this.loadContent();
+            await updateContent(1, this.EditContent);
+            await this.loadContent();
         },
     },
 };

@@ -12,6 +12,12 @@ export async function getContent() {
     return res.data;
 }
 
+export async function getPicture() {
+    const res = await axios.get("/allImg");
+
+    return res.data;
+}
+
 export async function addContent(content) {
     await axios.post("/content/createContent", content);
 }
