@@ -62,7 +62,7 @@ class ImageController extends Controller
         \Log::info(json_encode($request->all()));
         \Log::info(json_encode($data->image));
         \Log::info(json_encode($image_path));
-        return redirect()->route('/home');
+        return redirect()->route('home');
     }
 
     public function showAllImages(){

@@ -33,12 +33,14 @@
             <ButtonComponent :buttonName="UploadButton" />
         </form>
     </div>
+    <!-- <PictureDatabaseComponent /> -->
 </template>
 
 <script>
-import { addImg } from "../shared/api.js";
+import { addImg, getPicture } from "../shared/api.js";
 
 export default {
+    emits: ["imgToParagraph"],
     data() {
         return {
             UploadButton: "Upload",
@@ -52,17 +54,19 @@ export default {
                 area: "",
                 country: "",
             },
+            allPics: [],
+            lastPic: {},
         };
     },
     computed: {},
     methods: {
-        uploadImg() {
+        async uploadImg() {
+            // send img to img-backend
             const fileData = new FormData();
             fileData.append("image", this.UploadedFile);
             fileData.append("name", this.ImgName);
             fileData.append("area", this.ImgArea);
             fileData.append("country", this.ImgCountry);
-            console.log(fileData);
 
             this.ImgName.length > 1 &&
             this.ImgArea.length > 1 &&
@@ -72,17 +76,24 @@ export default {
                   (this.NewImg.name = this.ImgName),
                   (this.NewImg.area = this.ImgArea),
                   (this.NewImg.country = this.ImgCountry),
-                  addImg(fileData),
+                  await addImg(fileData),
                   (this.ImgName = ""),
                   (this.ImgArea = ""),
                   (this.ImgCountry = ""))
                 : null;
+
+            // show uploaded img in paragraph
+            this.allPics = await getPicture();
+            console.log("👍", this.allPics);
+            console.log("👍👍");
+            this.lastPic = this.allPics.pop();
+            console.log(this.lastPic);
+            this.$emit("imgToParagraph", this.lastPic);
         },
+
         changeFile(event) {
             this.FileLength = event.target.files.length;
             this.UploadedFile = event.target.files[0];
-            console.log(event.target.files[0], event.target.files.length);
-            // console.log(event);
         },
     },
 };

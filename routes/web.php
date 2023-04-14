@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Response;
 |
 */
 
-Route::get('/', [MainController::class, 'index']);
+Route::get('/', [MainController::class, 'index'])->name('home');
 
 
 // Login

@@ -1,6 +1,11 @@
 <template>
-    <select name="auswahl" id="auswahl" v-model="preselectedContent">
-        <option value="start">--Add content--</option>
+    <select
+        name="auswahl"
+        id="auswahl"
+        v-model="preselectedContent"
+        @change="showOption()"
+    >
+        <option v-if="firstClick" value="start">--Add content--</option>
         <option value="text">Text</option>
         <option value="pictureFromDatabase">Picture from Database</option>
         <option value="pictureUpload">Upload Picture</option>
@@ -14,6 +19,16 @@ export default {
     name: "SelectComponent",
     props: {
         preselectedContent: String,
+    },
+    data() {
+        return {
+            firstClick: true,
+        };
+    },
+    methods: {
+        showOption() {
+            this.firstClick = false;
+        },
     },
 };
 </script>

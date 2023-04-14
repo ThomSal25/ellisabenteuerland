@@ -1,15 +1,14 @@
 <template>
-    <!-- <ul>
-        <li v-for="Pic in allPics" :key="Pic.id">
-            'storage/' +{{ Pic.image }}
-            <img v-bind:src="'storage/' + Pic.image" />
+    <ul class="img-preview">
+        <li
+            v-for="Pic in allPics"
+            :key="Pic.id"
+            class="img-focus"
+            @click="selectImg(Pic)"
+        >
+            <img v-bind:src="'storage/' + Pic.image" width="250" />
         </li>
-    </ul> -->
-    <div class="img-preview">
-        <div v-for="image in allPics" :key="image.id">
-            <img v-bind:src="'/storage/' + image.image" width="250" />
-        </div>
-    </div>
+    </ul>
 </template>
 
 <script>
@@ -23,15 +22,11 @@ export default {
     },
     methods: {
         async loadPics() {
-            // this.allPics = await getPicture();
-            axios
-                .get("/allImg")
-                .then((response) => {
-                    this.allPics = response.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            this.allPics = await getPicture();
+        },
+
+        selectImg(element) {
+            this.$emit("imgToParagraph", element);
         },
     },
 };
@@ -41,6 +36,16 @@ export default {
 .img-preview {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: center;
     gap: 1rem;
+}
+
+.img-focus {
+    transition: 1s;
+}
+
+.img-focus:hover {
+    border: 0.1rem solid black;
+    transform: scale(1.2);
 }
 </style>

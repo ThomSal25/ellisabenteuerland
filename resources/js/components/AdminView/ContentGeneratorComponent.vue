@@ -112,10 +112,20 @@
                                 },
                             ]"
                         >
-                            <PictureDatabaseComponent />
+                            <PictureDatabaseComponent
+                                @imgToParagraph="
+                                    addImgToParagraph(
+                                        paragraph.createdAt,
+                                        $event
+                                    )
+                                "
+                            />
                         </div>
                         <!-- If picture upload selected -->
                         <PictureUploadComponent
+                            @imgToParagraph="
+                                addImgToParagraph(paragraph.createdAt, $event)
+                            "
                             :class="[
                                 {
                                     'hide-edit-field': paragraph.hidePicUpload,
@@ -233,7 +243,7 @@ export default {
                           (item.contentType = "pictureFromDatabase"),
                           (item.hidePicDatabaseActive = false))
                         : eValue === "pictureUpload"
-                        ? ((item.description = "{{PictureUploadComponent}}"),
+                        ? ((item.description = ""),
                           (item.contentType = "pictureUpload"),
                           (item.hidePicUpload = false))
                         : eValue === "youtube"
@@ -349,6 +359,16 @@ export default {
             this.counter > 1 ? (this.counter--, this.Columns.pop()) : null;
         },
 
+        addImgToParagraph(id, imgToParagraph) {
+            for (let item of this.Columns) {
+                console.log("id: ", id, "item.id: ", item.createdAt);
+                id === item.createdAt
+                    ? ((item.description = `<img src="storage/${imgToParagraph.image}" />`),
+                      console.log(item))
+                    : null;
+            }
+        },
+
         async createCollumns() {
             this.Sitecontent.push(this.Columns);
             //load all information for the put method and add the content of the current view
@@ -356,6 +376,7 @@ export default {
             this.EditContent.content = this.Sitecontent;
             this.Columns = [];
             this.counter = 1;
+            this.showEditField();
             await updateContent(1, this.EditContent);
             await this.loadContent();
         },
@@ -382,7 +403,10 @@ export default {
 }
 
 .sitecontent {
+    /* for columns of new paragraphs */
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .paragraph {
