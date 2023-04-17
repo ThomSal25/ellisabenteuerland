@@ -1,23 +1,33 @@
 <template>
-    <div class="content-container">
-        <div
-            v-for="(content, index) in Sitecontent"
-            :key="index"
-            class="sitecontent"
+    <div
+        v-for="(content, index) in Sitecontent"
+        :key="index"
+        class="sitecontent"
+    >
+        <!-- <article v-html="content" class="paragraph"></article> -->
+        <article
+            class="article-border single-part"
+            v-for="paragraph in content"
+            :key="paragraph.createdAt"
         >
-            <!-- <article v-html="content" class="paragraph"></article> -->
-            <article
-                class="article-border single-part"
-                v-for="paragraph in content"
-                :key="paragraph.createdAt"
-            >
-                <SelectComponent
-                    :preselectedContent="paragraph.contentType"
+            <div>
+                <ButtonComponent
+                    :buttonName="AddAbove"
                     class="hide"
-                    @change="kindOfContent($event, paragraph.createdAt)"
+                    @click="addContentAbove(paragraph.createdAt)"
                 />
-
+            </div>
+            <SelectComponent
+                :preselectedContent="paragraph.contentType"
+                class="hide"
+                @change="kindOfContent($event, paragraph.createdAt)"
+            />
+            <div class="content-row">
+                <ButtonComponent :buttonName="AddLeft" class="hide" />
                 <p v-html="paragraph.description"></p>
+                <ButtonComponent :buttonName="AddRight" class="hide" />
+            </div>
+            <div>
                 <ButtonComponent
                     :buttonName="EditButton"
                     class="hide"
@@ -28,9 +38,11 @@
                     class="hide"
                     @click="deleteParagraph(paragraph.createdAt)"
                 />
-            </article>
-        </div>
+            </div>
+            <ButtonComponent :buttonName="AddBelow" class="hide" />
+        </article>
     </div>
+
     <br /><br /><br />
     <br /><br />
     <!-- EditField -->
@@ -140,9 +152,38 @@
                                 },
                             ]"
                         >
-                            <span>Add YouTube-Link:</span>
-                            <InputComponent />
-                            <ButtonComponent :buttonName="AddLink" />
+                            <div>
+                                <ol class="tube-instruction">
+                                    Grundlagen für DSGVO-konformes Einbetten:
+                                    <li>Video auf YouTube aufrufen</li>
+                                    <li>"Teilen" anclicken</li>
+                                    <li>"Einbetten" auswählen</li>
+                                    <li>"iframe" kopieren</li>
+                                    <li>
+                                        "width" und "height" auf Anforderungen
+                                        anpassen
+                                    </li>
+                                </ol>
+                            </div>
+                            <div>
+                                <span>Add YouTube-Link:</span>
+                                <!-- <InputComponent
+                                    v-model="tubeLink"
+                                    class="link-field"
+                                /> -->
+                                <textarea
+                                    name="tubeLink"
+                                    id=""
+                                    cols="30"
+                                    rows="10"
+                                    v-model="tubeLink"
+                                    class="link-field"
+                                ></textarea>
+                                <ButtonComponent
+                                    :buttonName="AddLink"
+                                    @click="addTubeLink(paragraph.createdAt)"
+                                />
+                            </div>
                         </div>
                         <!-- If button selected -->
                         <div
@@ -180,11 +221,16 @@ export default {
             EditButton: "Edit",
             DeleteButton: "Delete",
             SaveChangeButton: "Save Change",
+            AddAbove: "Add above",
+            AddLeft: "<Add left",
+            AddRight: "Add right>",
+            AddBelow: "Add below",
             AddCollumnsButton: "Add Collumns",
             PrepareNewContent: "New Paragraph",
             AddLink: "Add Link",
             AddBtn: "Add Button Text",
             TiptapField: "Hier bitte Text einfügen.",
+            tubeLink: "",
             hideSelect: true,
             Columns: [],
             EditTiptapField: {
@@ -225,9 +271,34 @@ export default {
             this.Sitecontent = this.Subs[0].content;
         },
 
+        // async addContentAbove(id){},
+
+        async addContentAbove(id) {
+            const newField = {
+                description: "New Field",
+                createdAt: Date() + Math.floor(Math.random() * 1000000),
+                contentType: "",
+                hideTiptapActive: true,
+                hidePicDatabaseActive: true,
+                hidePicUpload: true,
+                hideTubeComp: true,
+                hideBtnComp: true,
+            };
+            let contentIndex = "";
+            let siteIndex = "";
+            for (let item of this.Sitecontent) {
+                for (let part of item) {
+                    id === part.createdAt
+                        ? ((siteIndex = this.Sitecontent.indexOf(item)),
+                          (contentIndex = item.indexOf(part)))
+                        : null;
+                }
+            }
+            this.Sitecontent[siteIndex].splice(contentIndex, 0, newField);
+        },
+
         async kindOfNewContent(event, id) {
             const eValue = event.target.value;
-            // console.log(eValue, event.target);
             for (let item of this.Columns) {
                 item.hidePicDatabaseActive = true;
                 item.hidePicUpload = true;
@@ -247,7 +318,9 @@ export default {
                           (item.contentType = "pictureUpload"),
                           (item.hidePicUpload = false))
                         : eValue === "youtube"
-                        ? ((item.description = ""), (item.hideTubeComp = false))
+                        ? ((item.description = ""),
+                          (item.contentType = "youtube"),
+                          (item.hideTubeComp = false))
                         : eValue === "button"
                         ? ((item.description = ""), (item.hideBtnComp = false))
                         : null
@@ -316,6 +389,11 @@ export default {
             }
 
             await updateContent(this.EditContent.id, this.EditContent);
+            for (let item of this.Sitecontent) {
+                item.length <= 0
+                    ? this.Sitecontent.splice(this.Sitecontent.indexOf(item), 1)
+                    : null;
+            }
             await this.loadContent();
         },
 
@@ -361,10 +439,16 @@ export default {
 
         addImgToParagraph(id, imgToParagraph) {
             for (let item of this.Columns) {
-                console.log("id: ", id, "item.id: ", item.createdAt);
                 id === item.createdAt
-                    ? ((item.description = `<img src="storage/${imgToParagraph.image}" />`),
-                      console.log(item))
+                    ? (item.description = `<img src="storage/${imgToParagraph.image}" />`)
+                    : null;
+            }
+        },
+
+        addTubeLink(id) {
+            for (let item of this.Columns) {
+                id === item.createdAt
+                    ? (item.description = `${this.tubeLink}`)
                     : null;
             }
         },
@@ -385,13 +469,26 @@ export default {
 </script>
 
 <style>
-.content-container {
+.sitecontent {
+    /* for columns of new paragraphs */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.change-orientation {
     display: grid;
+    text-align: center;
 }
 
 .single-part {
     margin: 0.5rem;
     padding: 0.5rem;
+}
+
+.content-row {
+    display: flex;
+    justify-content: center;
 }
 
 .edit-container {
@@ -400,13 +497,6 @@ export default {
 
 #border {
     border: 0.1rem solid black;
-}
-
-.sitecontent {
-    /* for columns of new paragraphs */
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .paragraph {
@@ -467,5 +557,15 @@ export default {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
+}
+
+.tube-instruction {
+    display: inline-block;
+    text-align: left;
+}
+
+.link-field {
+    width: 25rem;
+    height: 10rem;
 }
 </style>
