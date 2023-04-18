@@ -9,23 +9,24 @@
             class="article-border single-part"
             v-for="paragraph in content"
             :key="paragraph.createdAt"
+            :style="getCoordinates(paragraph.rowStart, paragraph.rowEnd)"
         >
-            <div>
+            <!-- <div>
                 <ButtonComponent
                     :buttonName="AddAbove"
                     class="hide"
                     @click="addContentAbove(paragraph.createdAt)"
                 />
-            </div>
+            </div> -->
             <SelectComponent
                 :preselectedContent="paragraph.contentType"
                 class="hide"
                 @change="kindOfContent($event, paragraph.createdAt)"
             />
             <div class="content-row">
-                <ButtonComponent :buttonName="AddLeft" class="hide" />
+                <!-- <ButtonComponent :buttonName="AddLeft" class="hide" /> -->
                 <p v-html="paragraph.description"></p>
-                <ButtonComponent :buttonName="AddRight" class="hide" />
+                <!-- <ButtonComponent :buttonName="AddRight" class="hide" /> -->
             </div>
             <div>
                 <ButtonComponent
@@ -39,7 +40,7 @@
                     @click="deleteParagraph(paragraph.createdAt)"
                 />
             </div>
-            <ButtonComponent :buttonName="AddBelow" class="hide" />
+            <!-- <ButtonComponent :buttonName="AddBelow" class="hide" /> -->
         </article>
     </div>
 
@@ -82,20 +83,80 @@
 
         <div :class="[{ 'hide-edit-field': hideEditField }]">
             <div>
-                <span>Number of Collumns:</span>
-                <CounterFieldComponent
-                    class="counter-field"
-                    :count="counter"
-                    @logCountUp="logNumUp()"
-                    @logCountDown="logNumDown()"
-                />
+                <div class="counter-field">
+                    <div>
+                        <span>Number of Columns:</span>
+                        <CounterFieldComponent
+                            class="counter-field"
+                            :count="counter"
+                            @logCountUp="logNumUp()"
+                            @logCountDown="logNumDown()"
+                        />
+                    </div>
+                    <div>
+                        <ButtonComponent
+                            :buttonName="NewContentBtn"
+                            class="counter-field"
+                            @click="addContentToParagraph()"
+                        />
+                        <ButtonComponent
+                            :buttonName="DeleteContentBtn"
+                            class="counter-field"
+                            @click="delContentToParagraph"
+                        />
+                    </div>
+                </div>
 
                 <p>Preview:</p>
                 <div class="grid-row" :style="columnCount">
                     <div
                         v-for="paragraph in Columns"
                         :key="paragraph.createdAt"
+                        id="border"
+                        :style="
+                            getCoordinates(paragraph.rowStart, paragraph.rowEnd)
+                        "
                     >
+                        <div class="counter-field">
+                            <div>
+                                <span>Start in row:</span
+                                ><CounterFieldComponent
+                                    class="counter-field"
+                                    :count="paragraph.rowStart"
+                                    @logCountUp="
+                                        logRowSpan(
+                                            paragraph.createdAt,
+                                            paragraph.rowStart++
+                                        )
+                                    "
+                                    @logCountDown="
+                                        logRowSpan(
+                                            paragraph.createdAt,
+                                            paragraph.rowStart--
+                                        )
+                                    "
+                                />
+                            </div>
+                            <div>
+                                <span>End in row:</span>
+                                <CounterFieldComponent
+                                    class="counter-field"
+                                    :count="paragraph.rowEnd"
+                                    @logCountUp="
+                                        logRowSpan(
+                                            paragraph.createdAt,
+                                            paragraph.rowEnd++
+                                        )
+                                    "
+                                    @logCountDown="
+                                        logRowSpan(
+                                            paragraph.createdAt,
+                                            paragraph.rowEnd--
+                                        )
+                                    "
+                                />
+                            </div>
+                        </div>
                         <SelectComponent
                             :preselectedContent="'start'"
                             @change="
@@ -158,6 +219,9 @@
                                     <li>Video auf YouTube aufrufen</li>
                                     <li>"Teilen" anclicken</li>
                                     <li>"Einbetten" auswählen</li>
+                                    <li>
+                                        Erweiterten Datenschutzmodus aktivieren
+                                    </li>
                                     <li>"iframe" kopieren</li>
                                     <li>
                                         "width" und "height" auf Anforderungen
@@ -193,9 +257,18 @@
                                 },
                             ]"
                         >
-                            <span>Add button text:</span>
-                            <InputComponent />
-                            <ButtonComponent :buttonName="AddBtn" />
+                            <div>
+                                <span>Add button text:</span>
+                                <InputComponent v-model="BtnText" />
+                            </div>
+                            <div>
+                                <span>Add button link:</span>
+                                <InputComponent v-model="BtnLink" />
+                            </div>
+                            <ButtonComponent
+                                :buttonName="AddBtn"
+                                @click="createBtn(paragraph.createdAt)"
+                            />
                         </div>
                     </div>
                 </div>
@@ -228,9 +301,13 @@ export default {
             AddCollumnsButton: "Add Collumns",
             PrepareNewContent: "New Paragraph",
             AddLink: "Add Link",
-            AddBtn: "Add Button Text",
+            AddBtn: "Add Button",
+            NewContentBtn: "New Content",
+            DeleteContentBtn: "Delete Content",
             TiptapField: "Hier bitte Text einfügen.",
             tubeLink: "",
+            BtnText: "",
+            BtnLink: "",
             hideSelect: true,
             Columns: [],
             EditTiptapField: {
@@ -251,6 +328,8 @@ export default {
             hideEditField: true,
             hideEditContainer: true,
             counter: 1,
+            counterContent: 1,
+            numOfRows: 1,
             PreviewText:
                 "Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus, laboriosam et? Laborum necessitatibus itaque alias rerum porro dolores, quas quos perspiciatis hic quibusdam aut exercitationem repellat nesciunt nam beatae voluptates.",
             PreviewButton: "<button>Button</button>",
@@ -262,7 +341,9 @@ export default {
     },
     computed: {
         columnCount() {
-            return { gridTemplateColumns: `repeat(${this.counter}, 1fr)` };
+            return {
+                gridTemplateColumns: `repeat(${this.counter}, 1fr)`,
+            };
         },
     },
     methods: {
@@ -402,6 +483,8 @@ export default {
                 {
                     description: "New Field",
                     createdAt: Date() + 1,
+                    rowStart: 1,
+                    rowEnd: 1,
                     contentType: "",
                     hideTiptapActive: true,
                     hidePicDatabaseActive: true,
@@ -410,16 +493,19 @@ export default {
                     hideBtnComp: true,
                 },
             ];
+            this.counter = 1;
+            this.counterContent = 1;
             return (this.hideEditField = !this.hideEditField);
         },
 
-        logNumUp() {
-            this.counter++;
-
-            for (let i = 1; i <= this.counter; i++) {
+        addContentToParagraph() {
+            this.counterContent++;
+            for (let i = 1; i <= this.counterContent; i++) {
                 let newParagraph = {
                     description: "New Field",
                     createdAt: Date() + i,
+                    rowStart: 1,
+                    rowEnd: 1,
                     contentType: "",
                     hideTiptapActive: true,
                     hidePicDatabaseActive: true,
@@ -433,8 +519,37 @@ export default {
             }
         },
 
+        delContentToParagraph() {
+            this.counterContent > 1
+                ? (this.counterContent--, this.Columns.pop())
+                : null;
+        },
+
+        logNumUp() {
+            this.counter++;
+        },
+
         logNumDown() {
-            this.counter > 1 ? (this.counter--, this.Columns.pop()) : null;
+            this.counter > 1 ? this.counter-- : null;
+        },
+
+        logRowSpan(id, itemCount) {
+            for (let item of this.Columns) {
+                id === item.createdAt ? itemCount : null;
+            }
+        },
+
+        getCoordinates(rowStart, rowEnd) {
+            return {
+                gridRowStart: rowStart,
+                gridRowEnd: rowEnd,
+            };
+            // this.counter > 1
+            //     ? {
+            //           gridRowStart: rowStart,
+            //           gridRowEnd: rowEnd,
+            //       }
+            //     : null;
         },
 
         addImgToParagraph(id, imgToParagraph) {
@@ -449,6 +564,17 @@ export default {
             for (let item of this.Columns) {
                 id === item.createdAt
                     ? (item.description = `${this.tubeLink}`)
+                    : null;
+            }
+        },
+
+        createBtn(id) {
+            console.log("👍");
+            for (let item of this.Columns) {
+                id === item.createdAt
+                    ? (item.description = `<button>
+                                <a href="${this.BtnLink}">${this.BtnText}</a>
+                            </button>`)
                     : null;
             }
         },
@@ -471,7 +597,7 @@ export default {
 <style>
 .sitecontent {
     /* for columns of new paragraphs */
-    display: flex;
+    display: grid;
     justify-content: center;
     align-items: center;
 }
@@ -553,6 +679,7 @@ export default {
 
 .counter-field {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     position: relative;
     left: 50%;
     transform: translateX(-50%);
