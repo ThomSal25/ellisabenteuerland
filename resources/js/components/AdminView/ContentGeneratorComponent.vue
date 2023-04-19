@@ -13,7 +13,7 @@
         >
             <!-- <div>
                 <ButtonComponent
-                    :buttonName="AddAbove"
+                    buttonName="Add Above"
                     class="hide"
                     @click="addContentAbove(paragraph.createdAt)"
                 />
@@ -24,23 +24,23 @@
                 @change="kindOfContent($event, paragraph.createdAt)"
             />
             <div class="content-row">
-                <!-- <ButtonComponent :buttonName="AddLeft" class="hide" /> -->
+                <!-- <ButtonComponent buttonName="Add Left" class="hide" /> -->
                 <p v-html="paragraph.description"></p>
-                <!-- <ButtonComponent :buttonName="AddRight" class="hide" /> -->
+                <!-- <ButtonComponent buttonName="Add Right" class="hide" /> -->
             </div>
             <div>
                 <ButtonComponent
-                    :buttonName="EditButton"
+                    buttonName="Edit"
                     class="hide"
                     @click="editContent(paragraph.createdAt)"
                 />
                 <ButtonComponent
-                    :buttonName="DeleteButton"
+                    buttonName="Delete"
                     class="hide"
                     @click="deleteParagraph(paragraph.createdAt)"
                 />
             </div>
-            <!-- <ButtonComponent :buttonName="AddBelow" class="hide" /> -->
+            <!-- <ButtonComponent buttonName="Add Below" class="hide" /> -->
         </article>
     </div>
 
@@ -63,11 +63,11 @@
                 <p>New Text:</p>
                 <TiptapComponent v-model="EditTiptapField.description" />
                 <ButtonComponent
-                    :buttonName="SaveChangeButton"
+                    buttonName="Save Change"
                     @click="updateSiteContent(this.EditContent.id)"
                 />
                 <ButtonComponent
-                    :buttonName="CancelButton"
+                    buttonName="Cancel"
                     @click="closeEditTiptapField()"
                 />
             </div>
@@ -76,10 +76,7 @@
 
     <br /><br /><br /><br />
     <div class="new-content-field">
-        <ButtonComponent
-            :buttonName="PrepareNewContent"
-            @click="showEditField"
-        />
+        <ButtonComponent buttonName="New Paragraph" @click="showEditField" />
 
         <div :class="[{ 'hide-edit-field': hideEditField }]">
             <div>
@@ -95,12 +92,12 @@
                     </div>
                     <div>
                         <ButtonComponent
-                            :buttonName="NewContentBtn"
+                            buttonName="New Content"
                             class="counter-field"
                             @click="addContentToParagraph()"
                         />
                         <ButtonComponent
-                            :buttonName="DeleteContentBtn"
+                            buttonName="Delete Content"
                             class="counter-field"
                             @click="delContentToParagraph"
                         />
@@ -244,7 +241,7 @@
                                     class="link-field"
                                 ></textarea>
                                 <ButtonComponent
-                                    :buttonName="AddLink"
+                                    buttonName="Add Link"
                                     @click="addTubeLink(paragraph.createdAt)"
                                 />
                             </div>
@@ -266,14 +263,14 @@
                                 <InputComponent v-model="BtnLink" />
                             </div>
                             <ButtonComponent
-                                :buttonName="AddBtn"
+                                buttonName="Add Button"
                                 @click="createBtn(paragraph.createdAt)"
                             />
                         </div>
                     </div>
                 </div>
                 <ButtonComponent
-                    :buttonName="AddCollumnsButton"
+                    buttonName="Add Collumns"
                     @click="createCollumns()"
                 />
             </div>
@@ -289,21 +286,6 @@ export default {
         return {
             Subs: {},
             Sitecontent: [],
-            SaveNewContent: "Save",
-            CancelButton: "Cancel",
-            EditButton: "Edit",
-            DeleteButton: "Delete",
-            SaveChangeButton: "Save Change",
-            AddAbove: "Add above",
-            AddLeft: "<Add left",
-            AddRight: "Add right>",
-            AddBelow: "Add below",
-            AddCollumnsButton: "Add Collumns",
-            PrepareNewContent: "New Paragraph",
-            AddLink: "Add Link",
-            AddBtn: "Add Button",
-            NewContentBtn: "New Content",
-            DeleteContentBtn: "Delete Content",
             TiptapField: "Hier bitte Text einfügen.",
             tubeLink: "",
             BtnText: "",
